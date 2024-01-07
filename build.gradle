@@ -1,0 +1,62 @@
+plugins {
+    id 'java-library'
+    id "io.qameta.allure" version "2.10.0"
+}
+
+allure {
+    report {
+        version.set("2.19.0")
+    }
+    adapter { // отвечает за появление папочки build/allure-results
+        aspectjWeaver.set(true) //обработка аннотации @Step
+        frameworks {
+            junit5 { //название фреймворка
+                adapterVersion.set("2.19.0") //версия интеграции фреймворка и Allure
+            }
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation(
+            'com.codeborne:selenide:6.16.0',
+            'org.junit.jupiter:junit-jupiter:5.9.3',
+            'ch.qos.logback:logback-classic:1.4.12',
+            'io.qameta.allure:allure-selenide:2.19.0',
+            'com.github.javafaker:javafaker:1.0.2',
+            'io.rest-assured:rest-assured:5.3.0'
+    )
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.0')
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+
+test {
+    useJUnitPlatform()
+}
+
+
+tasks.register('CUSTOM_BUILD_AND_TEST_AND_SEND_TG_MSG') {
+    def tasks = [clean, test, downloadAllure, allureReport]
+    for (int i = 0; i < tasks.size() - 1; i++) {
+        tasks[i + 1].mustRunAfter(tasks[i])
+    }
+    dependsOn(tasks)
+    doLast {
+        exec {
+            commandLine 'java', '-DconfigFile=C:\\Test\\AQAProjects\\ParametrizedTestsAndReporting\\src\\notifications\\telegram.json', '-jar', 'C:\\Test\\AQAProjects\\ParametrizedTestsAndReporting\\src\\notifications\\allure-notifications-4.6.1.jar'
+        }
+    }
+}
+
+
+test {
+    ignoreFailures = true
+}
