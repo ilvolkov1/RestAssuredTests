@@ -28,7 +28,8 @@ dependencies {
             'ch.qos.logback:logback-classic:1.4.12',
             'io.qameta.allure:allure-selenide:2.19.0',
             'com.github.javafaker:javafaker:1.0.2',
-            'io.rest-assured:rest-assured:5.3.0'
+            'io.rest-assured:rest-assured:5.3.0',
+            'com.github.javafaker:javafaker:1.0.2'
     )
     testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.0')
 }
