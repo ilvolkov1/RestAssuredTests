@@ -150,6 +150,5 @@ public class APITests {
                 .statusCode(201)
                 .body("name", is(name))
                 .body("job", is(job));
-
     }
 }
