@@ -1,7 +1,8 @@
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import com.github.javafaker.Faker;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -9,7 +10,8 @@ import java.time.format.DateTimeFormatter;
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 
 public class APITests {
 
@@ -50,6 +52,63 @@ public class APITests {
                 .then()
                 .log().all()
                 .statusCode(200);
+    }
+
+    @DisplayName("Registration without password")
+    @Test
+    public void negativeRegistrationTest() {
+        String email = "eve.holt@reqres.in";
+        String data = String.format("{ \"email\": \"%s\"}", email);
+
+        given()
+                .contentType(JSON)
+                .body(data)
+                .when()
+                .log().all()
+                .post("https://reqres.in/api/register")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .body("error",is("Missing password"));
+
+    }
+
+    @DisplayName("Registration without email")
+    @Test
+    public void negative2RegistrationTest() {
+        String password = "pistol";
+        String data = String.format("{ \"password\": \"%s\"}", password);
+
+        given()
+                .contentType(JSON)
+                .body(data)
+                .when()
+                .log().all()
+                .post("https://reqres.in/api/register")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .body("error",is("Missing email or username"));
+
+    }
+
+    @DisplayName("Only defined users can register")
+    @Test
+    public void negative3RegistrationTest() {
+        String email = "eve12321.holt@reqres.in";
+        String password = "pistol22";
+        String data = String.format("{ \"email\": \"%s\", \"password\": \"%s\" }", email, password);
+
+        given()
+                .contentType(JSON)
+                .body(data)
+                .when()
+                .log().all()
+                .post("https://reqres.in/api/register")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .body("error", is("Note: Only defined users succeed registration"));
 
     }
 
@@ -94,9 +153,9 @@ public class APITests {
                 .then()
                 .log().all()
                 .statusCode(201)
-                .body("name",is(name))
-                .body("job",is(job))
-                .body("createdAt",startsWith(formattedDate));
+                .body("name", is(name))
+                .body("job", is(job))
+                .body("createdAt", startsWith(formattedDate));
 
     }
 }
