@@ -41,19 +41,19 @@ public class APITests {
         int perPageNumber = 6;
         String queryUrl = "https://reqres.in/api/users";
 
-        given()
-                .queryParam("page", pageNumber)
-                .when()
-                .log().all()
-                .get(queryUrl)
-                .then()
-                .log().all()
-                .statusCode(200)
-                .body("per_page", is(perPageNumber));
+        Response response =
+                given()
+                        .queryParam("page", pageNumber)
+                        .when()
+                        .log().all()
+                        .get(queryUrl)
+                        .then()
+                        .log().all()
+                        .statusCode(200)
+                        .body("per_page", is(perPageNumber))
+                        .extract().response();
 
-        Response response = given().get(queryUrl);
         int idCount = response.jsonPath().getList("data.id").size();
-        System.out.println(response.jsonPath().getList("data.id"));
         assertEquals(perPageNumber, idCount);
     }
 
