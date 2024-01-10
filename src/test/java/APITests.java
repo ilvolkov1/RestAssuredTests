@@ -1,4 +1,5 @@
 import com.github.javafaker.Faker;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,6 +9,7 @@ import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class APITests {
 
@@ -31,6 +33,28 @@ public class APITests {
                 .statusCode(200)
                 .body("data.id", is(id));
 
+    }
+
+    @ValueSource(ints = {1, 2})
+    @ParameterizedTest
+    public void listOfUsersIsDefinedSizeTest(int pageNumber) {
+        int perPageNumber = 6;
+        String queryUrl = "https://reqres.in/api/users";
+
+        given()
+                .queryParam("page", pageNumber)
+                .when()
+                .log().all()
+                .get(queryUrl)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("per_page", is(perPageNumber));
+
+        Response response = given().get(queryUrl);
+        int idCount = response.jsonPath().getList("data.id").size();
+        System.out.println(response.jsonPath().getList("data.id"));
+        assertEquals(perPageNumber, idCount);
     }
 
     @Test
