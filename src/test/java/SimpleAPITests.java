@@ -11,7 +11,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class APITests {
+public class SimpleAPITests {
 
     @Test
     public void testTest() {
