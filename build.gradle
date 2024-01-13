@@ -60,14 +60,14 @@ tasks.withType(Test) {
 
 
 tasks.register('CUSTOM_BUILD_AND_TEST_AND_SEND_TG_MSG') {
-    def tasks = [clean, test, downloadAllure, allureReport]
+    def tasks = [clean, test, downloadAllure, allureReport, allureServe]
     for (int i = 0; i < tasks.size() - 1; i++) {
         tasks[i + 1].mustRunAfter(tasks[i])
     }
     dependsOn(tasks)
     doLast {
         exec {
-            commandLine 'java', '-DconfigFile=C:\\Test\\AQAProjects\\ParametrizedTestsAndReporting\\src\\notifications\\telegram.json', '-jar', 'C:\\Test\\AQAProjects\\ParametrizedTestsAndReporting\\src\\notifications\\allure-notifications-4.6.1.jar'
+ //           commandLine 'java', '-DconfigFile=C:\\Test\\AQAProjects\\ParametrizedTestsAndReporting\\src\\notifications\\telegram.json', '-jar', 'C:\\Test\\AQAProjects\\ParametrizedTestsAndReporting\\src\\notifications\\allure-notifications-4.6.1.jar'
         }
     }
 }
