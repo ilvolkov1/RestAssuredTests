@@ -15,7 +15,7 @@ import static specs.CreateUserSpec.createUserResponseSpec;
 
 public class ImprovedAPITests {
 
-
+    @DisplayName("Create new User with Lombok Model")
     @Test
     public void createUserWithLombokTest() {
         Faker fake = new Faker();
@@ -43,7 +43,7 @@ public class ImprovedAPITests {
 
     }
 
-    @DisplayName("Create new User")
+    @DisplayName("Create new User with spec")
     @Test
     public void createUserWithSpecsTest() {
         Faker fake = new Faker();

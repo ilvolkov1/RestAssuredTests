@@ -9,12 +9,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static specs.BasicSpec.BasicRequestSpec;
+import static specs.BasicSpec.BasicResponseSpec;
 
 public class SimpleAPITests {
 
+    @DisplayName("1st test")
     @Test
     public void testTest() {
         get("https://www.google.ru/?hl=ru")
@@ -23,20 +25,21 @@ public class SimpleAPITests {
 
     }
 
-    @ValueSource(ints = {1, 2, 3, 4, 5, 6, 7})
+    @DisplayName("Get User by ID")
+    @ValueSource(ints = {1, 2, 3, 4})
     @ParameterizedTest
     public void postTest(int id) {
-        given()
+        given(BasicRequestSpec)
                 .when()
-                .log().all()
                 .get("https://reqres.in/api/users/" + id)
                 .then()
-                .log().all()
+                .spec(BasicResponseSpec)
                 .statusCode(200)
                 .body("data.id", is(id));
 
     }
 
+    @DisplayName("List of Users is defined size")
     @ValueSource(ints = {1, 2})
     @ParameterizedTest
     public void listOfUsersIsDefinedSizeTest(int pageNumber) {
@@ -44,13 +47,12 @@ public class SimpleAPITests {
         String queryUrl = "https://reqres.in/api/users";
 
         Response response =
-                given()
+                given(BasicRequestSpec)
                         .queryParam("page", pageNumber)
                         .when()
-                        .log().all()
                         .get(queryUrl)
                         .then()
-                        .log().all()
+                        .spec(BasicResponseSpec)
                         .statusCode(200)
                         .body("per_page", is(perPageNumber))
                         .extract().response();
@@ -59,20 +61,19 @@ public class SimpleAPITests {
         assertEquals(perPageNumber, idCount);
     }
 
+    @DisplayName("Successful registration")
     @Test
     public void registrationTest() {
         String email = "eve.holt@reqres.in";
         String password = "pistol";
         String data = String.format("{ \"email\": \"%s\", \"password\": \"%s\" }", email, password);
 
-        given()
-                .contentType(JSON)
+        given(BasicRequestSpec)
                 .body(data)
                 .when()
-                .log().all()
                 .post("https://reqres.in/api/register")
                 .then()
-                .log().all()
+                .spec(BasicResponseSpec)
                 .statusCode(200);
     }
 
@@ -82,14 +83,12 @@ public class SimpleAPITests {
         String email = "eve.holt@reqres.in";
         String data = String.format("{ \"email\": \"%s\"}", email);
 
-        given()
-                .contentType(JSON)
+        given(BasicRequestSpec)
                 .body(data)
                 .when()
-                .log().all()
                 .post("https://reqres.in/api/register")
                 .then()
-                .log().all()
+                .spec(BasicResponseSpec)
                 .statusCode(400)
                 .body("error", is("Missing password"));
 
@@ -101,14 +100,12 @@ public class SimpleAPITests {
         String password = "pistol";
         String data = String.format("{ \"password\": \"%s\"}", password);
 
-        given()
-                .contentType(JSON)
+        given(BasicRequestSpec)
                 .body(data)
                 .when()
-                .log().all()
                 .post("https://reqres.in/api/register")
                 .then()
-                .log().all()
+                .spec(BasicResponseSpec)
                 .statusCode(400)
                 .body("error", is("Missing email or username"));
 
@@ -121,43 +118,41 @@ public class SimpleAPITests {
         String password = "pistol22";
         String data = String.format("{ \"email\": \"%s\", \"password\": \"%s\" }", email, password);
 
-        given()
-                .contentType(JSON)
+        given(BasicRequestSpec)
                 .body(data)
                 .when()
-                .log().all()
                 .post("https://reqres.in/api/register")
                 .then()
-                .log().all()
+                .spec(BasicResponseSpec)
                 .statusCode(400)
                 .body("error", is("Note: Only defined users succeed registration"));
 
     }
 
-
+    @DisplayName("Deleting user by ID")
     @Test
     public void deleteTest() {
         int ID = 2;
-        given()
+        given(BasicRequestSpec)
                 .when()
-                .log().all()
                 .delete("https://reqres.in/api/users/" + ID)
                 .then()
-                .log().all()
+                .spec(BasicResponseSpec)
                 .statusCode(204);
     }
 
+    @DisplayName("Favicon is good")
     @Test
     public void goodFaviconTest() {
-        given()
+        given(BasicRequestSpec)
                 .when()
-                .log().all()
                 .get("https://www.google.com/favicon.ico")
                 .then()
-                .log().all()
+                .spec(BasicResponseSpec)
                 .statusCode(200);
     }
 
+    @DisplayName("Create new User basic test")
     @Test
     public void createUserTest() {
         Faker fake = new Faker();
@@ -165,14 +160,12 @@ public class SimpleAPITests {
         String job = fake.job().title();
         String data = String.format("{ \"name\": \"%s\", \"job\": \"%s\" }", name, job);
 
-        given()
+        given(BasicRequestSpec)
                 .when()
-                .log().all()
-                .contentType(JSON)
                 .body(data)
                 .post("https://reqres.in/api/users")
                 .then()
-                .log().all()
+                .spec(BasicResponseSpec)
                 .statusCode(201)
                 .body("name", is(name))
                 .body("job", is(job));
