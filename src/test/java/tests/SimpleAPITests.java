@@ -152,7 +152,7 @@ public class SimpleAPITests {
                 .statusCode(200);
     }
 
-    @DisplayName("Create new User basic test")
+    @DisplayName("Create new User basic simple test")
     @Test
     public void createUserTest() {
         Faker fake = new Faker();
